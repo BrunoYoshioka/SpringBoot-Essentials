@@ -1,6 +1,7 @@
 package br.com.devdojo.endpoint;
 
 import br.com.devdojo.error.CustomErrorType;
+import br.com.devdojo.error.ResourceNotFoundException;
 import br.com.devdojo.model.Student;
 import br.com.devdojo.repository.StudentRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,10 +27,12 @@ public class StudentEndpoint {
     // Buscar um valor dessa lista
     @GetMapping(path = "/{id}")
     public ResponseEntity<?> getStudentById(@PathVariable("id") Long id){
-        /* Student student = studentDAO.findOne(id); // java 7 */
-        Student student = studentDAO.findById(id).get();
+        /* Student student = studentDAO.findOne(id); // java 7
         if (student == null) // Caso não encontrado
-            return new ResponseEntity<>(new CustomErrorType("Student not found"), HttpStatus.NOT_FOUND);
+            throw new ResourceNotFoundException("Student not found for ID: "+id);
+        return new ResponseEntity<>(student, HttpStatus.OK);*/
+        verifyIfStudentExists(id); // método verificar se o id estudante existe.
+        Student student = studentDAO.findById(id).get();
         return new ResponseEntity<>(student, HttpStatus.OK);
     }
 
@@ -46,13 +49,19 @@ public class StudentEndpoint {
     @DeleteMapping(path = "/{id}")
     public ResponseEntity<?> delete(@PathVariable Long id){
         /*studentDAO.delete(id); // java 7 */
+        verifyIfStudentExists(id); // método verificar se o id estudante existe.
         studentDAO.deleteById(id);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @PutMapping
     public ResponseEntity<?> update(@RequestBody Student student){
+        verifyIfStudentExists(student.getId()); // método verificar se o id estudante existe.
         studentDAO.save(student);
         return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    private void verifyIfStudentExists(Long id){
+        Student student = studentDAO.findById(id).orElseThrow(() -> new ResourceNotFoundException("Student not found for ID: " +id));
     }
 }
