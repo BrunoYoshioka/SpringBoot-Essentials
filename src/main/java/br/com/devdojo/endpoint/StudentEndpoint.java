@@ -8,6 +8,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
@@ -30,7 +32,8 @@ public class StudentEndpoint {
 
     // Buscar um valor dessa lista
     @GetMapping(path = "/{id}")
-    public ResponseEntity<?> getStudentById(@PathVariable("id") Long id){
+    public ResponseEntity<?> getStudentById(@PathVariable("id") Long id,
+                                            @AuthenticationPrincipal UserDetails userDetails){
         /* Student student = studentDAO.findOne(id); // java 7
         if (student == null) // Caso não encontrado
             throw new ResourceNotFoundException("Student not found for ID: "+id);
