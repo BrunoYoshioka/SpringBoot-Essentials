@@ -27,7 +27,7 @@ public class StudentEndpoint {
 
     @GetMapping(path = "user/students")
     public ResponseEntity<?> listAll(Pageable pageable){
-        return new ResponseEntity<>(studentDAO.findAll(pageable), HttpStatus.OK);
+        return new ResponseEntity<>(studentDAO.findAll(), HttpStatus.OK);
     }
 
     // Buscar um valor dessa lista
